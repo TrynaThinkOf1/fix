@@ -1,11 +1,14 @@
 #pragma once
 
 #include <string>
-// #include <vector>
+#include <vector>
 #include <fstream>
 #include <filesystem>
+#include <cmath>
 
 #include "getHomeDirectory.hpp"
+
+#define BUFFER_SIZE 4096
 
 
 /*
@@ -16,16 +19,16 @@
  */
 class CommandHistory {
   private:
-    std::ifstream file;
+    std::fstream file;
+
+    bool is_at_end = false;
+    bool goToEnd();
 
   public:
     explicit CommandHistory(std::string& error);
     CommandHistory(const CommandHistory&& other) = delete; // no-move resource, holds a file
     CommandHistory(const CommandHistory& other) = delete; // no-copy resource, holds a file
     ~CommandHistory(); // explicit destructor to close the file
-
-    // TODO: [[nodiscard]] bool hasNPreviousCommands(int n);
-    [[nodiscard]] bool hasPreviousCommand();
 
     // TODO: [[nodiscard]] std::vector<std::string> getNPreviousCommands(int n);
     [[nodiscard]] std::string getPreviousCommand();
