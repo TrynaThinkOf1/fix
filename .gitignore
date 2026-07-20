@@ -1,0 +1,9 @@
+.cache
+.DS_Store
+.zed
+.vscode
+
+fix
+fix.exe
+
+build/*
