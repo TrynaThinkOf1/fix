@@ -22,7 +22,7 @@ class CurlWrapper {
 
     long sendRequest(
       const std::string& url,
-      const std::unordered_map<std::string_view, std::string_view>& headers,
+      const std::unordered_map<std::string, std::string>& headers,
       const json& body,
       size_t (*write_data)(char* buffer, size_t size, size_t nmemb, void* userp),
       std::string& error

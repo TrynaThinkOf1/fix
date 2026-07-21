@@ -29,7 +29,7 @@ CurlWrapper::~CurlWrapper() {
  */
 long CurlWrapper::sendRequest(
   const std::string& url,
-  const std::unordered_map<std::string_view, std::string_view>& headers,
+  const std::unordered_map<std::string, std::string>& headers,
   const json& body,
   size_t (*write_data)(char* buffer, size_t size, size_t nmemb, void* userp),
   std::string& error
@@ -40,16 +40,16 @@ long CurlWrapper::sendRequest(
 
   // create the headers
   struct curl_slist* header_list = nullptr;
-  for (const auto& (key, value) : headers) {
-    const std::string header = key + ": " + value;
-    header_list = curl_slist_append(header_list, header);
+  for (const auto& pair : headers) {
+    const std::string header = pair.first + ": " + pair.second;
+    header_list = curl_slist_append(header_list, header.c_str());
   }
   curl_easy_setopt(handle, CURLOPT_HTTPHEADER, header_list);
 
   // add the JSON body
-  const std::string json_string = json.to_string();
-  curl_easy_setopt(curl, CURLOPT_POSTFIELDS, json_string.c_str());
-  curl_easy_setopt(curl, CURLOPT_POSTFIELDSIZE, json_string.size());
+  const std::string json_string = body.dump();
+  curl_easy_setopt(handle, CURLOPT_POSTFIELDS, json_string.c_str());
+  curl_easy_setopt(handle, CURLOPT_POSTFIELDSIZE, json_string.size());
   
   curl_easy_setopt(handle, CURLOPT_WRITEFUNCTION, write_data); // add the custom callback to write received data
 
@@ -59,7 +59,7 @@ long CurlWrapper::sendRequest(
   
   CURLcode success = curl_easy_perform(handle); // actually make the call
   
-  curl_slist_free(header_list);
+  curl_slist_free_all(header_list);
   curl_easy_cleanup(handle); // free all resources
 
   if (success != CURLE_OK) {
