@@ -13,3 +13,7 @@
 [[nodiscard]] static bool verifyApiKey(const std::string& key) {
   return !key.empty();
 }
+
+[[nodiscard]] static bool verifyApiModel(const std::string& model) {
+  return !model.empty();
+}
