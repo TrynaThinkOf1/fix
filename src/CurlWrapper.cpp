@@ -58,6 +58,10 @@ long CurlWrapper::sendRequest(
   curl_easy_setopt(handle, CURLOPT_ERRORBUFFER, err.data());
   
   CURLcode success = curl_easy_perform(handle); // actually make the call
+
+  // retrieve HTTP code
+  long code;
+  curl_easy_getinfo(handle, CURLINFO_RESPONSE_CODE, &code);
   
   curl_slist_free_all(header_list);
   curl_easy_cleanup(handle); // free all resources
@@ -66,10 +70,6 @@ long CurlWrapper::sendRequest(
     error = std::string(err.begin(), err.end());
     return -1;
   }
-
-  // retrieve HTTP code
-  long code;
-  curl_easy_getinfo(handle, CURLINFO_RESPONSE_CODE, &code);
 
   return code;
 }
