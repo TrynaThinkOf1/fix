@@ -1,5 +1,6 @@
 #include "file_handling/CommandHistory.hpp"
 
+
 bool CommandHistory::goToEnd() {
   this->file.clear();
   this->file.seekg(0, std::ios::end); // go to the end of the file
@@ -59,10 +60,17 @@ CommandHistory::~CommandHistory() {
   if (this->file.is_open()) this->file.close(); // technically unnecessary (I believe)
 }
 
-
-[[nodiscard]] std::string CommandHistory::getPreviousCommand() {
+/*
+ * Go through the command history file and search for the last N entered commands
+ * excluding the call to fix
+ * 
+ * If n > # of commands, the list returned is end-padded with empty strings
+ */
+[[nodiscard]] std::vector<std::string> CommandHistory::getNPreviousCommands(int n) {
+  if (n < 1) return {""};
+  
   if (!this->is_at_end) {
-    if (!this->goToEnd()) return "";
+    if (!this->goToEnd()) return {""};
   }
   
   std::streamoff pos = this->file.tellg() - (std::streamoff)1; // ignore the last \n char
@@ -71,7 +79,7 @@ CommandHistory::~CommandHistory() {
   int found = 0;
 
   // found < 2 because we want to get the last command BEFORE calling fix
-  while (pos > 0 && found < 2) {
+  while (pos > 0 && found < n + 1) {
     // can we read a full BUFFER_SIZE bytes or only pos bytes
     const int nbytes_to_read = std::min<std::streamoff>(pos, buffer.size());
     pos -= nbytes_to_read; // go back that many bytes so that we can read that many bytes
@@ -91,11 +99,14 @@ CommandHistory::~CommandHistory() {
   this->file.clear();
   this->file.seekg(pos + 1);
 
+  std::vector<std::string> commands(n);
+  
   std::string line;
-  std::getline(this->file, line);
+  for (int i = 0; i < n; i++) {
+    std::getline(this->file, line);
+    size_t semidx = line.find(';'); // deformat the line, which is in the format `: 1784577813:0;command`
+    commands[i] = line.substr(semidx + 1);
+  }
 
-  // deformat it
-  size_t semidx = line.find(';'); 
-
-  return line.substr(semidx + 1);
+  return commands;
 }

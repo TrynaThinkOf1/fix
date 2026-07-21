@@ -30,6 +30,9 @@ class CommandHistory {
     CommandHistory(const CommandHistory& other) = delete; // no-copy resource, holds a file
     ~CommandHistory(); // explicit destructor to close the file
 
-    // TODO: [[nodiscard]] std::vector<std::string> getNPreviousCommands(int n);
-    [[nodiscard]] std::string getPreviousCommand();
+    [[nodiscard]] std::vector<std::string> getNPreviousCommands(int n);
+
+    [[nodiscard]] inline std::string getPreviousCommand() {
+      return this->getNPreviousCommands(1)[0];
+    }
 };
