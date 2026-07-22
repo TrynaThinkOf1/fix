@@ -1,8 +1,12 @@
-#include <cstdlib>
-#include <iostream>
+/*
+ * Copyright Zevi Berlin 2026
+ * 
+ * GNU General Purpose License v3.0 located in LICENSE file
+ */
 
-int main() {
-  std::cout << "Hello, world!\n";
+#include "cli/parser.hpp"
 
-  return EXIT_SUCCESS;
+
+int main(int argc, char** argv) {
+  return parse(argc, argv);
 }
