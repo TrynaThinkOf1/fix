@@ -22,7 +22,7 @@ bool CommandHistory::goToEnd() {
 CommandHistory::CommandHistory(std::string& error) {
   const std::string home = getHomeDirectory();
   [[unlikely]] if (home.empty()) {
-    error = "Failed to fetch command:  could not find user's home directory";
+    error = "Failed to fetch command:  could not find user's home directory.";
     return;
   }
 
